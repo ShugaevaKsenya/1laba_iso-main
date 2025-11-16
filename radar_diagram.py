@@ -67,13 +67,14 @@ class RadarDiagram:
 
         fig, axs = plt.subplots(figsize=(10, 10), subplot_kw=dict(projection='radar'))
         fig.subplots_adjust(top=0.85, bottom=0.05)
-
-        axs.plot(theta, data, color='b', linewidth=2, label="Текущие характеристики")
+        data_clipped = np.minimum(data, restrictions)
+        axs.plot(theta, data_clipped, color='b', linewidth=2, label="Текущие характеристики")
         
         axs.plot(theta, restrictions, color='g', linestyle='--', linewidth=1.5, label="Предельные значения")
         
         if initial_data is not None:
-            axs.plot(theta, initial_data, color='r', linestyle='-', linewidth=1.5, label="Начальные значения")
+            initial_clipped = np.minimum(initial_data, restrictions)
+            axs.plot(theta, initial_clipped, color='r', linestyle='-', linewidth=1.5, label="Начальные значения")
 
         axs.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0), fontsize='small')
         axs.set_varlabels([f"X{i+1}" for i in range(N)])
@@ -81,7 +82,7 @@ class RadarDiagram:
         fig.text(0.5, 0.965, title, horizontalalignment='center', 
                  color='black', weight='bold', size='large')
         
-        max_val = max(max(data), max(restrictions)) * 1.1
+        max_val = max(np.max(restrictions), np.max(data_clipped)) * 1.1
         axs.set_ylim(0, max_val)
         
         plt.draw()
